@@ -12,7 +12,7 @@ const getApiUrl = () => {
   // In production, use environment variable or default to relative path
   // If VITE_API_URL is set, use it; otherwise use relative paths (same domain)
   const apiUrl = import.meta.env.VITE_API_URL || '';
-  
+  console.log('apiUrl', apiUrl);
   // Remove trailing slash if present
   return apiUrl.replace(/\/$/, '');
 };
