@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { getApiEndpoint } from './config';
+import Header from './components/Header';
+import InputSection from './components/InputSection';
+import ResultsTable from './components/ResultsTable';
+import InfoSection from './components/InfoSection';
+import { ErrorAlert, InfoAlert } from './components/Alerts';
 import './App.css';
 
 function App() {
@@ -62,7 +67,7 @@ function App() {
                     if (data.type === 'complete') {
                       setProgress(`Scraping completed! Found ${data.count} exhibitors.`);
                     }
-                  } catch (_parseError) {
+                  } catch {
                     // Ignore parse errors
                   }
                 }
@@ -176,185 +181,21 @@ function App() {
     <div className="app">
       <div className="background-decoration"></div>
       <div className="container">
-        <header className="header">
-          <div className="logo-container">
-            <div className="logo-icon">🚀</div>
-          </div>
-          <h1>Exhibitor Scraper</h1>
-          <p className="subtitle">Professional Web Scraping Tool for Event Exhibitors</p>
-        </header>
+        <Header />
 
-        <div className="input-section">
-          <div className="input-card">
-            <div className="input-group">
-              <label htmlFor="url">
-                <span className="label-icon">🔗</span>
-                Exhibitor Listing URL
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="url"
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://example.com/exhibitors"
-                  disabled={loading}
-                  className="modern-input"
-                />
-                {url && (
-                  <button 
-                    className="clear-btn"
-                    onClick={() => setUrl('')}
-                    type="button"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            </div>
+        <InputSection
+          url={url}
+          loading={loading}
+          onUrlChange={(e) => setUrl(e.target.value)}
+          onScrapeClick={handleScrape}
+        />
 
-            <button
-              onClick={handleScrape}
-              disabled={loading || !url.trim()}
-              className={`btn btn-primary ${loading ? 'loading' : ''}`}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner"></span>
-                  <span>Scraping...</span>
-                </>
-              ) : (
-                <>
-                  <span>⚡</span>
-                  <span>Start Scraping</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <ErrorAlert error={error} />
+        {!error && <InfoAlert message={progress} />}
 
-        {error && (
-          <div className="alert alert-error">
-            <div className="alert-icon">⚠️</div>
-            <div className="alert-content">
-              <strong>Error</strong>
-              <p>{error}</p>
-            </div>
-          </div>
-        )}
+        <ResultsTable results={results} onExport={handleExport} />
 
-        {progress && !error && (
-          <div className="alert alert-info">
-            <div className="alert-icon">ℹ️</div>
-            <div className="alert-content">
-              <p>{progress}</p>
-            </div>
-          </div>
-        )}
-
-        {results && (
-          <div className="results-section">
-            <div className="results-header">
-              <div className="results-title">
-                <h2>Scraping Results</h2>
-                <span className="results-count">{results.length} Exhibitors Found</span>
-              </div>
-              <button onClick={handleExport} className="btn btn-success btn-export">
-                <span>📊</span>
-                <span>Export to Excel</span>
-              </button>
-            </div>
-
-            <div className="results-table-container">
-              <div className="table-wrapper">
-                <table className="results-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Company Name</th>
-                      <th>Booth</th>
-                      <th>Website</th>
-                      <th>Source</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map((item, index) => (
-                      <tr key={index}>
-                        <td className="row-number">{index + 1}</td>
-                        <td className="company-name">
-                          <strong>{item.companyName}</strong>
-                        </td>
-                        <td className="booth-number">
-                          {item.booth ? (
-                            <span className="booth-badge">{item.booth}</span>
-                          ) : (
-                            <span className="no-booth">-</span>
-                          )}
-                        </td>
-                        <td className="website-cell">
-                          {item.website ? (
-                            <a
-                              href={item.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="website-link"
-                            >
-                              <span className="link-icon">🌐</span>
-                              <span className="link-text">{item.website}</span>
-                            </a>
-                          ) : (
-                            <span className="no-website">
-                              <span className="no-icon">—</span>
-                              Not found
-                            </span>
-                          )}
-                        </td>
-                        <td>
-                          <span className={`badge badge-${item.source || 'generic'}`}>
-                            {item.source || 'generic'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="info-section">
-          <div className="info-grid">
-            <div className="info-card">
-              <div className="info-card-header">
-                <span className="info-icon">🌐</span>
-                <h3>Supported Platforms</h3>
-              </div>
-              <ul className="info-list">
-                <li><span className="check">✓</span> MapYourShow events</li>
-                <li><span className="check">✓</span> A2Z event platforms</li>
-                <li><span className="check">✓</span> SmallWorldLabs</li>
-                <li><span className="check">✓</span> Affiliate Summit</li>
-                <li><span className="check">✓</span> GoShow platforms</li>
-                <li><span className="check">✓</span> Generic exhibitor listings</li>
-              </ul>
-            </div>
-
-            <div className="info-card">
-              <div className="info-card-header">
-                <span className="info-icon">⚡</span>
-                <h3>Key Features</h3>
-              </div>
-              <ul className="info-list">
-                <li><span className="check">✓</span> Automatic JavaScript rendering</li>
-                <li><span className="check">✓</span> Smart pagination handling</li>
-                <li><span className="check">✓</span> Website discovery via Google</li>
-                <li><span className="check">✓</span> One-click Excel export</li>
-                <li><span className="check">✓</span> Universal URL support</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        <InfoSection />
       </div>
     </div>
   );
