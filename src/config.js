@@ -1,6 +1,6 @@
 // API Configuration
 // In production, this will use the VITE_API_URL environment variable
-// In development, it defaults to localhost:3001
+// In development, it defaults to localhost:3000
 
 const getApiUrl = () => {
   // Check if we're in development (Vite sets this)
