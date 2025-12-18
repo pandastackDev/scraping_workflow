@@ -38,7 +38,7 @@ function App() {
           url: url.trim(),
           stream: true,
           options: {
-            handlePagination: false,
+            // Pagination is auto-enabled for SmallWorldLabs, can be disabled by setting handlePagination: false
             findWebsites: true,
             maxWebsiteSearches: 50
           }
