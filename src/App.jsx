@@ -39,8 +39,8 @@ function App() {
           stream: true,
           options: {
             // Pagination is auto-enabled for SmallWorldLabs, can be disabled by setting handlePagination: false
-            findWebsites: true,
-            maxWebsiteSearches: 50
+            findWebsites: true
+            // maxWebsiteSearches not set - will search for all exhibitors by default
           }
         })
       });
